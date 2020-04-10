@@ -7,14 +7,21 @@ public class Player : MonoBehaviour
     [SerializeField] private float _speed = 5f;
     [SerializeField] private float _gravity = 1.0f;
     [SerializeField] private float _jumpHeight = 15.0f;
+    [SerializeField] private int _coins;
     private float _yVelocity;
     private bool _canDoubleJump = false;
     private CharacterController _controller;
-    // Start is called before the first frame update
+    private UIManager _uiManager;
+    // Variable for player coins
+    
     void Start()
     {
         _controller = GetComponent<CharacterController>();
-        transform.position = new Vector3(0, 2, 0);
+        _uiManager = GameObject.Find("Canvas").GetComponent<UIManager>();
+        if (_uiManager == null)
+        {
+            Debug.LogError("The UI Manager is NULL!");
+        }
     }
 
     // Update is called once per frame
@@ -54,5 +61,11 @@ public class Player : MonoBehaviour
 
         velocity.y = _yVelocity;
         _controller.Move(velocity * Time.deltaTime);
+    }
+
+    public void AddCoins()
+    {
+        _coins++;
+        _uiManager.UpdateCoinDisplay(_coins);
     }
 }
