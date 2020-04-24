@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class Player : MonoBehaviour
 {
@@ -8,11 +9,17 @@ public class Player : MonoBehaviour
     [SerializeField] private float _gravity = 1.0f;
     [SerializeField] private float _jumpHeight = 15.0f;
     [SerializeField] private int _coins;
+    [SerializeField] private int _lives = 3;
     private float _yVelocity;
     private bool _canDoubleJump = false;
+    private Vector3 _startingPosition;
     private CharacterController _controller;
     private UIManager _uiManager;
-    // Variable for player coins
+
+    void Awake()
+    {
+        _startingPosition = transform.position;
+    }
     
     void Start()
     {
@@ -22,13 +29,15 @@ public class Player : MonoBehaviour
         {
             Debug.LogError("The UI Manager is NULL!");
         }
+
+        _uiManager.UpdateLivesDisplay(_lives);
     }
 
     // Update is called once per frame
     void Update()
     {
         CalculateMovement();
-        transform.SetPositionAndRotation(transform.position, Quaternion.identity);
+        // transform.SetPositionAndRotation(transform.position, Quaternion.identity);
     }
 
     private void CalculateMovement()
@@ -67,5 +76,28 @@ public class Player : MonoBehaviour
     {
         _coins++;
         _uiManager.UpdateCoinDisplay(_coins);
+    }
+
+    public void Respawn()
+    {
+        transform.position = _startingPosition;
+        _lives--;
+        if (_lives <= 0)
+        {
+            SceneManager.LoadScene(sceneBuildIndex: 0);
+        }
+        _uiManager.UpdateLivesDisplay(lives: _lives);
+    }
+
+    public bool IsFalling()
+    {
+        if (transform.position.y <= -7f)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 }
